@@ -17,7 +17,7 @@
 		\framework\ - пустая папка для файлов фреймворка
 
 	Инструменты
-		Инструменты скачиваются отдельно отсюда: https://github.com/spellcaster/APKTools/archive/master.zip. Распаковать архив в директорию пакета.
+		Инструменты скачиваются отдельно отсюда: https://github.com/spellcaster/Android_APKTools/archive/master.zip. Распаковать архив в директорию пакета.
 
 		\APK_worker.bat - главный скрипт
 		\qpid_repl.js - скрипт для замены id в qpids.smali (запускается из APK_worker)
