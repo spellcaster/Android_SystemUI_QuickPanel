@@ -17,11 +17,7 @@
 		\framework\ - пустая папка для файлов фреймворка
 
 	Инструменты
-		\7za.exe - архиватор
-		\apktool.jar - программа для сборки-разборки apk
-		\aapt_Custom.exe - программа, требующаяся для сборки apk (из комплекта apktool)
-		\aapt_SDK.exe - программа, требующаяся для сборки apk (из комплекта Android SDK) - см. ПРИМ.1
-			Инструменты скачиваются отдельно 
+		Инструменты скачиваются отдельно отсюда: https://github.com/spellcaster/APKTools/archive/master.zip. Распаковать архив в директорию пакета.
 
 		\APK_worker.bat - главный скрипт
 		\qpid_repl.js - скрипт для замены id в qpids.smali (запускается из APK_worker)
@@ -60,13 +56,6 @@
 
 8) Поставить приложение QuickPanelSettings
 
-ПРИМ. 1
+ПРИМ.
 
 По умолчанию для разборки-сборки apk файлов (в т.ч. фреймворка) используется более свежая версия aapt.exe из SDK. Версия из набора apktool не умеет обрабатывать нестандартные названия ресурсов (вроде drawable-sw600dp-mdpi - выдает ошибку вида "invalid resource directory name: ...\SystemUI\res/values-sw600dp-port"), поэтому версия из SDK более всеядна. Тем не менее, если эта версия у вас выдает ошибки при разборке или сборке, можно попробовать использовать apktool версию. Для этого откройте APK_worker.bat в текстовом редакторе и раскомментируйте строчку ":: set AAPT=aapt_Custom.exe" (просто уберите символы "::").
-
-ПРИМ. 2
-
-используемые бинарные файлы:
-apktool.jar, aapt_Custom.exe: http://code.google.com/p/android-apktool/
-7za.exe: http://www.7-zip.org/download.html
-aapt_SDK.exe: http://developer.android.com/sdk/index.html (взято из Android SDK)
