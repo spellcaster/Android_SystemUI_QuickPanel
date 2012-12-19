@@ -1,11 +1,10 @@
 :: Script for automated modification of SystemUI.apk (implant lidroid panel into status bar)
 :: Requirements:
 ::   You must have JDK installed and java.exe in PATH
-::   The folder with this script must not contain spaces or non-latin symbols
 :: Usage:
-::   Put SystemUI.apk next to this file (APK_worker.bat)
+::   Put SystemUI.apk next to this file (SysUI_worker.bat)
 ::   Put all apk's from your device's /system/framework into folder \framework
-::   Run APK_worker.bat
+::   Run SysUI_worker.bat
 
 @echo off
 
@@ -25,7 +24,7 @@ set AAPT=aapt_SDK.exe
 copy /y "%CDir%\%AAPT%" "%CDir%\aapt.exe" > nul
 
 :: Java
-java -version 2> nul
+call java.exe -version 2> nul
 if errorlevel 1 (
 	echo Java not installed!
 	goto :Err
@@ -96,6 +95,11 @@ if "!auto!"=="0" (
 :: apktool.jar requires aapt.exe to be in current directory
 pushd "%CDir%"
 
+:: (Re)Install all the frameworks (sometimes required)
+rd /s/q "%CDir%\%APKName%" 2> nul
+rd /s/q "%HOMEDRIVE%%HOMEPATH%\apktool\framework" 2> nul
+FOR %%F IN ("%CDir%\framework\*.apk") DO call java.exe -jar "%CDir%\apktool.jar" if "%%F"
+
 goto Step!step!
 
 :: 1. Разобрать SystemUI.apk
@@ -104,12 +108,8 @@ goto Step!step!
 
 echo ### Step 1. Decompile %APKName%.apk to %CDir%\%APKName%
 
-rd /s/q "%CDir%\%APKName%" 2> nul
-:: (Re)Install all the frameworks (sometimes required)
-rd /s/q "%HOMEDRIVE%%HOMEPATH%\apktool\framework" 2> nul
-FOR %%F IN ("%CDir%\framework\*.apk") DO java -jar "%CDir%\apktool.jar" if "%%F"
 :: Decompile
-java -jar "%CDir%\apktool.jar" d "%CDir%\%APKName%.apk" "%CDir%\%APKName%"
+call java.exe -jar "%CDir%\apktool.jar" d "%CDir%\%APKName%.apk" "%CDir%\%APKName%"
 if errorlevel 1 goto :Err
 
 set /a step=!step!+1
@@ -139,7 +139,7 @@ IF EXIST "%CDir%\%APKName%\res\drawable-ldpi" (
 )
 
 copy /y "%CDir%\%QPFolder%\res\layout\*" "%CDir%\%APKName%\res\layout"
-CScript "%CDir%\xml_add.js" "%QPFolder%"
+call CScript.exe "%CDir%\xml_add.js" "%QPFolder%"
 
 set /a step=!step!+1
 goto Prompt
@@ -151,10 +151,10 @@ goto Prompt
 
 echo ### Step 3. Build temp %APKName%.apk from %CDir%\%APKName% and decompile it
 
-java -jar "%CDir%\apktool.jar" b -f "%CDir%\%APKName%"
+call java.exe -jar "%CDir%\apktool.jar" b -f "%CDir%\%APKName%"
 if errorlevel 1 goto :Err
 
-java -jar "%CDir%\apktool.jar" d "%CDir%\%APKName%\dist\%APKName%.apk" "%CDir%\%APKName%\dist\%APKName%"
+call java.exe -jar "%CDir%\apktool.jar" d "%CDir%\%APKName%\dist\%APKName%.apk" "%CDir%\%APKName%\dist\%APKName%"
 if errorlevel 1 goto :Err
 
 echo ** Temp apk decompiled to %CDir%\%APKName%\dist\%APKName%
@@ -171,7 +171,7 @@ echo ### Step 4. Copy public.xml and smali, replace IDs
 
 copy /y "%CDir%\%APKName%\dist\%APKName%\res\values\public.xml" "%CDir%\%APKName%\res\values"
 xcopy "%CDir%\%QPFolder%\smali" "%CDir%\%APKName%\smali" /e /i /y
-CScript "%CDir%\qpid_repl.js"
+call CScript.exe "%CDir%\qpid_repl.js"
 if errorlevel 1 goto :Err
 
 set /a step=!step!+1
@@ -187,7 +187,7 @@ echo ### Step 5. Build final %APKName%.apk
 rd /s/q "%CDir%\%APKName%\dist"
 rd /s/q "%CDir%\%APKName%\build"
 
-java -jar "%CDir%\apktool.jar" b -f "%CDir%\%APKName%"
+call java.exe -jar "%CDir%\apktool.jar" b -f "%CDir%\%APKName%"
 if errorlevel 1 goto :Err
 
 echo apk compiled, now you may use files from %CDir%\%APKName%\build in the original %APKName%.apk
@@ -210,11 +210,11 @@ copy /y "%CDir%\%APKName%.apk" "%CDir%\%APKName%_mod.apk"
 :: change dir so that 7zip could put the files to the right places
 pushd "%CDir%\%APKName%\build\apk"
 
-"%CDir%\7za.exe" a -tzip -mx5 "%CDir%\%APKName%_mod.apk" "classes.dex"
-"%CDir%\7za.exe" a -tzip -mx0 "%CDir%\%APKName%_mod.apk" "resources.arsc"
-"%CDir%\7za.exe" a -tzip -mx0 "%CDir%\%APKName%_mod.apk" "res\drawable-hdpi\qp_*.png"
-"%CDir%\7za.exe" a -tzip -mx5 "%CDir%\%APKName%_mod.apk" "res\layout\status_bar_expanded.xml"
-"%CDir%\7za.exe" a -tzip -mx5 "%CDir%\%APKName%_mod.apk" "res\layout\qp_*.xml"
+call "%CDir%\7za.exe" a -tzip -mx5 "%CDir%\%APKName%_mod.apk" "classes.dex"
+call "%CDir%\7za.exe" a -tzip -mx0 "%CDir%\%APKName%_mod.apk" "resources.arsc"
+call "%CDir%\7za.exe" a -tzip -mx0 "%CDir%\%APKName%_mod.apk" "res\drawable-hdpi\qp_*.png"
+call "%CDir%\7za.exe" a -tzip -mx5 "%CDir%\%APKName%_mod.apk" "res\layout\status_bar_expanded.xml"
+call "%CDir%\7za.exe" a -tzip -mx5 "%CDir%\%APKName%_mod.apk" "res\layout\qp_*.xml"
 
 popd
 
