@@ -95,11 +95,6 @@ if "!auto!"=="0" (
 :: apktool.jar requires aapt.exe to be in current directory
 pushd "%CDir%"
 
-:: (Re)Install all the frameworks (sometimes required)
-rd /s/q "%CDir%\%APKName%" 2> nul
-rd /s/q "%HOMEDRIVE%%HOMEPATH%\apktool\framework" 2> nul
-FOR %%F IN ("%CDir%\framework\*.apk") DO call java.exe -jar "%CDir%\apktool.jar" if "%%F"
-
 goto Step!step!
 
 :: 1. Разобрать SystemUI.apk
@@ -107,6 +102,11 @@ goto Step!step!
 :Step1
 
 echo ### Step 1. Decompile %APKName%.apk to %CDir%\%APKName%
+
+rd /s/q "%CDir%\%APKName%" 2> nul
+:: (Re)Install all the frameworks (sometimes required)
+rd /s/q "%HOMEDRIVE%%HOMEPATH%\apktool\framework" 2> nul
+FOR %%F IN ("%CDir%\framework\*.apk") DO call java.exe -jar "%CDir%\apktool.jar" if "%%F"
 
 :: Decompile
 call java.exe -jar "%CDir%\apktool.jar" d "%CDir%\%APKName%.apk" "%CDir%\%APKName%"
